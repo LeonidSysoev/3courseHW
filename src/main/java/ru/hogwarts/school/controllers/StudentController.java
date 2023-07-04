@@ -53,7 +53,7 @@ public class StudentController {
         return service.getAll();
     }
 
-    @GetMapping("/age")
+    @GetMapping("age")
     public Collection<Student> findByAge(@RequestParam int age) {
         return service.findByAge(age);
     }
