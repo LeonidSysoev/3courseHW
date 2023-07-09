@@ -1,54 +1,72 @@
 package ru.hogwarts.school.services;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.hogwarts.school.model.Faculty;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repositories.StudentRepository;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
-    StudentService service = new StudentService();
+    @Mock
+    private StudentRepository studentRepositoryMock;
+    private StudentService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new StudentService(studentRepositoryMock);
+    }
+
 
     @Test
     void add() {
-        var actual = service.add(new Student("Ron", 15, 1));
-        Student expected = new Student("Ron", 15, 1);
-        assertThat(actual.getId()).isEqualTo(1);
-        assertThat(actual).isEqualTo(expected);
+        when(studentRepositoryMock.save(new Student("Harry", 20, 1L)))
+                .thenReturn(new Student("Harry", 20, 1L));
+        var actual = service.add(new Student("Harry", 20, 1L));
+        assertEquals(1, actual.getId());
+        assertEquals(new Student("Harry", 20, 1L), actual);
     }
 
     @Test
     void edit() {
-        var expected = service.add(new Student("Ron", 15, 1));
-        var actual = service.edit(1, new Student("Hermiona", 14, 1));
-        assertThat(actual).isNotEqualTo(expected);
+        when(studentRepositoryMock.save(any()))
+                .then(invocation -> invocation.getArguments()[0]);
+        var actual = service.edit(new Student("Ron", 19, 1));
+        assertThat(actual.getAge()).isEqualTo(19);
     }
 
     @Test
     void find() {
-        var expected = service.add(new Student("Ron", 15, 1));
-        Student actual = service.find(1);
-        assertThat(actual).isEqualTo(expected);
+        when(studentRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(new Student("Harry", 20, 1)));
+        var actual = service.find(1);
+        assertEquals(new Student("Harry", 20, 1), actual);
     }
 
     @Test
     void delete() {
-        var actual = service.add(new Student("Harry", 18, 1));
-        service.delete(1);
-        assertThat(service.delete(1)).isNull();
-
+        service.delete(1L);
+        verify(studentRepositoryMock, times(1)).deleteById(1L);
     }
 
     @Test
     void getAll() {
-        service.add(new Student("Harry", 18, 1));
-        service.add(new Student("Ron", 16, 1));
-        service.add(new Student("Hermiona", 18, 1));
+        when(studentRepositoryMock.findAll())
+                .thenReturn(List.of(
+                        (new Student("Harry", 18, 1)),
+                        (new Student("Ron", 16, 2)),
+                        (new Student("Hermiona", 18, 3))));
 
         assertThat(service.getAll()).containsExactly(
                 new Student("Harry", 18, 1),
@@ -60,7 +78,13 @@ class StudentServiceTest {
 
     @Test
     void findByAge() {
-        var expected = service.add(new Student("Ron", 16, 1));
-        assertThat(service.findByAge(16)).containsExactly(expected);
+        when(studentRepositoryMock.findAll())
+                .thenReturn(List.of(
+                        (new Student("Harry", 20, 1)),
+                        (new Student("Ron", 16, 2)),
+                        (new Student("Hermiona", 18, 3))));
+        var actual = service.findByAge(20);
+        assertThat(actual.size()).isEqualTo(1);
     }
 }
+

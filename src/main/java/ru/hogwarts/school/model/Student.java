@@ -1,16 +1,26 @@
 package ru.hogwarts.school.model;
 
-import java.util.Objects;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
+import java.util.Objects;
+@Entity
 public class Student {
     private String name;
     private int age;
+    @Id
+    @GeneratedValue
     private long id;
 
     public Student(String name, int age, long id) {
         this.name = name;
         this.age = age;
         this.id = id;
+    }
+
+    public Student() {
+
     }
 
     @Override

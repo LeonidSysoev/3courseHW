@@ -34,8 +34,8 @@ public class StudentController {
     }
 
     @PutMapping
-    public ResponseEntity<Student> edit(@RequestParam long id, @RequestBody Student student) {
-        Student editStudent = service.edit(id, student);
+    public ResponseEntity<Student> edit(@RequestBody Student student) {
+        Student editStudent = service.edit(student);
         if (student == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
