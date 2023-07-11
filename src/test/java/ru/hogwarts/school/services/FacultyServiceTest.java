@@ -1,47 +1,74 @@
 package ru.hogwarts.school.services;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repositories.FacultyRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class FacultyServiceTest {
-    FacultyService facultyService = new FacultyService();
+    @Mock
+    private FacultyRepository facultyRepositoryMock;
+    private FacultyService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new FacultyService(facultyRepositoryMock);
+    }
+
 
     @Test
     void add() {
-        Faculty actual = facultyService.add(new Faculty("Harry", "red", 1));
+        when(facultyRepositoryMock.save(new Faculty("Harry", "red", 1L)))
+                .thenReturn(new Faculty("Harry", "red", 1L));
+        ;
+        var actual = service.add(new Faculty("Harry", "red", 1L));
         assertEquals(1, actual.getId());
-        var expected = new Faculty("Harry", "red", 1L);
-        assertEquals(expected, actual);
+        assertEquals(new Faculty("Harry", "red", 1L), actual);
     }
 
     @Test
     void edit() {
-        Faculty actual = facultyService.edit(1, new Faculty("Harry", "red",1));
-        var expected = new Faculty("Ron", "red", 1);
-        assertNotEquals(expected, actual);
+        when(facultyRepositoryMock.save(any()))
+                .then(invocation -> invocation.getArguments()[0]);
+        var actual = service.edit(new Faculty("Ron", "blue", 1));
+        assertThat(actual.getColor()).isEqualTo("blue");
     }
 
     @Test
     void find() {
-        Faculty expected = facultyService.add(new Faculty("Harry", "red", 1));
-        Faculty actual = facultyService.find (1);
-        assertEquals(expected, actual);
+        when(facultyRepositoryMock.findById(1L))
+                .thenReturn(Optional.of(new Faculty("Harry", "red", 1)));
+        var actual = service.find(1);
+        assertEquals(new Faculty("Harry", "red", 1), actual);
     }
 
     @Test
     void delete() {
-        Faculty actual = facultyService.add(new Faculty("Harry", "red", 1));
-        facultyService.delete(1);
-        assertThat(facultyService.delete(1)).isNull();
+        service.delete(1L);
+        verify(facultyRepositoryMock, times(1)).deleteById(1L);
     }
 
     @Test
     void findByColor() {
-        Faculty actual = facultyService.add(new Faculty("Harry", "red", 1));
-        assertThat(facultyService.findByColor("red")).containsExactly(actual);
+        when(facultyRepositoryMock.findAll())
+                .thenReturn(List.of(
+                        new Faculty("Harry", "red", 1),
+                        new Faculty("Ron", "blue", 2)));
+        var actual = service.findByColor("red");
+        assertThat(actual.size()).isEqualTo(1);
+
+
     }
 }
