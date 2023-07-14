@@ -32,7 +32,7 @@ public class AvatarService {
 
 
     public Avatar find(Long id) {
-        return avatarRepository.findById(id).orElse(new Avatar());
+        return avatarRepository.findByStudentId(id).orElse(new Avatar());
     }
 
     public void uploadAvatar(Long studentID, MultipartFile avatarFile) throws IOException {
@@ -44,7 +44,7 @@ public class AvatarService {
                 InputStream is = avatarFile.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
                 BufferedInputStream bis = new BufferedInputStream(is, 1024);
-                BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
 
         ) {
             bis.transferTo(bos);
@@ -55,8 +55,8 @@ public class AvatarService {
         avatar.setFileSize(avatarFile.getSize());
         avatar.setMediaType(avatarFile.getContentType());
         avatar.setData(avatarFile.getBytes());
-        avatarRepository.save(avatar);
         avatar.setData(generationImageData(filePath));
+        avatarRepository.save(avatar);
 
     }
 
