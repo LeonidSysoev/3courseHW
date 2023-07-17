@@ -1,11 +1,12 @@
 package ru.hogwarts.school.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
+import javax.persistence.*;
 import java.util.Objects;
 
-import static jakarta.persistence.GenerationType.*;
+//import static jakarta.persistence.GenerationType.*;
 
 @Entity
 public class Student {
