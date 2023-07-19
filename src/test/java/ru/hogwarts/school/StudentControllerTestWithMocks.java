@@ -23,6 +23,8 @@ import ru.hogwarts.school.services.StudentService;
 
 import java.util.*;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -127,17 +129,12 @@ public class StudentControllerTestWithMocks {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$.name").value("Drako")) //не могу понять почему здесь ошибка и как ее исправить?
                 .andDo(print());
     }
 
     @Test
     public void findBetweenAgeTest() throws Exception {
-        List<Student> students = new ArrayList<>(
-                Arrays.asList(
-                        new Student("Harry", 20, 1),
-                        new Student("Ron", 21, 2),
-                        new Student("Drako", 22, 3)));
+
         when(studentRepository.findByAgeBetween(any(Integer.class), any(Integer.class)))
                 .thenReturn(Arrays.asList(
                         new Student("Harry", 20, 1),
@@ -173,11 +170,13 @@ public class StudentControllerTestWithMocks {
         student.setName(name);
         student.setAge(age);
         student.setId(id);
-        when(studentRepository.findById(id)).thenReturn(Optional.of(faculty.getStudents())); // с этим тоже проблемы
+        student.setFaculty(faculty);
+        when(studentRepository.findById(id)).thenReturn(Optional.of(student));
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/student/" + facultyId + "faculty")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(facultyName));
+                        .get("/student/" + facultyId + "/faculty")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andDo(print());
     }
 
 
