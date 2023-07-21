@@ -33,6 +33,7 @@ public class Student {
 
     }
 
+
     @Override
     public String toString() {
         return "Student{" +
@@ -82,4 +83,7 @@ public class Student {
         return faculty;
     }
 
+    public void setFaculty(Faculty faculty) {
+        this.faculty = faculty;
+    }
 }
