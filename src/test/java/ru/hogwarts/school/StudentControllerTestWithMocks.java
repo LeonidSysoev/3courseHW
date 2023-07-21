@@ -50,7 +50,36 @@ public class StudentControllerTestWithMocks {
     private FacultyService facultyService;
 
     @Test
-    public void saveGetByIdDeleteStudentTest() throws Exception {
+    public void postStudentTest() throws Exception {
+        String name = "Harry";
+        int age = 20;
+        long id = 1L;
+
+        JSONObject studentObject = new JSONObject();
+        studentObject.put("name", name);
+        studentObject.put("age", age);
+        Student student = new Student();
+        student.setName(name);
+        student.setAge(age);
+        student.setId(id);
+        when(studentRepository.save(any(Student.class))).thenReturn(student);
+
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/student")
+                        .content(studentObject.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.age").value(age))
+                .andExpect(jsonPath("$.id").value(id));
+
+
+    }
+
+    @Test
+    public void GetByIdStudentTest() throws Exception {
         String name = "Harry";
         int age = 20;
         long id = 1L;
@@ -65,16 +94,30 @@ public class StudentControllerTestWithMocks {
         when(studentRepository.save(any(Student.class))).thenReturn(student);
         when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(student));
 
-
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/student")
-                        .content(studentObject.toString())
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .get("/student/1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.age").value(age))
                 .andExpect(jsonPath("$.id").value(id));
+    }
+
+    @Test
+    public void putStudentTest() throws Exception {
+        String name = "Harry";
+        int age = 20;
+        long id = 1L;
+
+        JSONObject studentObject = new JSONObject();
+        studentObject.put("name", name);
+        studentObject.put("age", age);
+        Student student = new Student();
+        student.setName(name);
+        student.setAge(age);
+        student.setId(id);
+        when(studentRepository.save(any(Student.class))).thenReturn(student);
+        when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(student));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/student")
@@ -86,13 +129,22 @@ public class StudentControllerTestWithMocks {
                 .andExpect(jsonPath("$.age").value(age))
                 .andExpect(jsonPath("$.id").value(id));
 
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/student/1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.age").value(age))
-                .andExpect(jsonPath("$.id").value(id));
+    }
+    @Test
+    public void DeleteStudentTest() throws Exception {
+        String name = "Harry";
+        int age = 20;
+        long id = 1L;
+
+        JSONObject studentObject = new JSONObject();
+        studentObject.put("name", name);
+        studentObject.put("age", age);
+        Student student = new Student();
+        student.setName(name);
+        student.setAge(age);
+        student.setId(id);
+        when(studentRepository.save(any(Student.class))).thenReturn(student);
+
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/student?id=1")
