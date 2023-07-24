@@ -50,5 +50,18 @@ public class StudentService {
         return studentRepository.findById(id).map(e -> e.getFaculty()).orElse(null);
     }
 
+    public int getAllQuantity() {
+        return studentRepository.getAllQuantity();
+    }
+
+    public long getAverageAge() {
+        return  studentRepository.getAverageAge();
+    }
+
+    public Collection<Student> getLastFiveStudents() {
+        return studentRepository.getLastFiveStudents();
+    }
+
+
 
 }

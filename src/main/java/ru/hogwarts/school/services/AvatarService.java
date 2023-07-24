@@ -1,6 +1,8 @@
 package ru.hogwarts.school.services;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -14,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -68,7 +71,7 @@ public class AvatarService {
             int height = image.getHeight() / (image.getWidth() / 100);
             BufferedImage data = new BufferedImage(100, height, image.getType());
             Graphics2D graphics = data.createGraphics();
-            graphics.drawImage(image, 0, 0,100, height, null);
+            graphics.drawImage(image, 0, 0, 100, height, null);
             graphics.dispose();
             ImageIO.write(data, getExtensions(filePath.getFileName().toString()), baos);
             return baos.toByteArray();
@@ -77,5 +80,10 @@ public class AvatarService {
 
     public String getExtensions(String filename) {
         return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    public List<Avatar> findAll(Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 }
