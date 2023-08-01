@@ -9,6 +9,10 @@ import ru.hogwarts.school.repositories.StudentRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 @Service
 public class StudentService {
@@ -76,4 +80,36 @@ public class StudentService {
     }
 
 
+    public Collection<String> getAllNameStartsA() {
+        logger.info("Called method getAllNameStartsA");
+        return getAll()
+                .stream()
+                .filter(e -> e.getName().startsWith("А"))
+                .map(e -> e.getName().toUpperCase())
+                .sorted()
+                .toList();
+    }
+
+    public double getStudentAverageAge() {
+        logger.info("Called method getStudentAverageAge");
+        return getAll()
+                .stream()
+                .mapToDouble(Student::getAge)
+                .average().getAsDouble();
+
+    }
+
+    public int findSum() {
+        logger.info("Called method findSum");
+        long start = System.currentTimeMillis();
+        int sum = Stream
+                .iterate(1, a -> a + 1)
+                .parallel()
+                .limit(1_000_000)
+                .reduce(0, (a, b) -> a + b);
+        long finish = System.currentTimeMillis();
+        long elapsed = finish - start;
+        System.out.println("Прошло времени, мс: " + elapsed);
+        return sum;
+    }
 }
