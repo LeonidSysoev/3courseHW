@@ -2,16 +2,13 @@ package ru.hogwarts.school.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.FacultyRepository;
 
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,5 +55,14 @@ public class FacultyService {
     public Collection<Student> findFacultyByStudent(Long id) {
         logger.info("Called method findFacultyByStudent with argument {}", id);
         return facultyRepository.findById(id).map(Faculty::getStudents).orElse(Collections.emptyList());
+    }
+
+    public Optional<String> getLongestFacultyName() {
+        logger.info("Called method getLongestFacultyName");
+        return facultyRepository.findAll()
+                .stream()
+                .map(e -> e.getName())
+                .max(Comparator.comparing(String::length));
+
     }
 }
