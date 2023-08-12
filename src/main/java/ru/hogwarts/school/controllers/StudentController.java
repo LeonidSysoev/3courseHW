@@ -99,4 +99,13 @@ public class StudentController {
     public int findSum() {
         return service.findSum();
     }
+
+    @GetMapping("/print-students")
+    public void printInConsole() {
+        service.printInConsole();
+    }
+    @GetMapping("/print-sync-students")
+    public void printSyncInConsole() {
+        service.printSyncInConsole();
+    }
 }

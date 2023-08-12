@@ -19,6 +19,7 @@ public class StudentService {
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     private final StudentRepository studentRepository;
+    private final Object flag = new Object();
 
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
@@ -84,8 +85,8 @@ public class StudentService {
         logger.info("Called method getAllNameStartsA");
         return getAll()
                 .stream()
-                .filter(e -> e.getName().startsWith("А"))
                 .map(e -> e.getName().toUpperCase())
+                .filter(e -> e.startsWith("А"))
                 .sorted()
                 .toList();
     }
@@ -95,7 +96,8 @@ public class StudentService {
         return getAll()
                 .stream()
                 .mapToDouble(Student::getAge)
-                .average().getAsDouble();
+                .average()
+                .getAsDouble();
 
     }
 
@@ -111,5 +113,52 @@ public class StudentService {
         long elapsed = finish - start;
         System.out.println("Прошло времени, мс: " + elapsed);
         return sum;
+    }
+
+    public void printInConsole() {
+        List students = studentRepository
+                .findAll()
+                .stream()
+                .map(Student::getName)
+                .limit(6)
+                .toList();
+        System.out.println(students.get(0));
+        System.out.println(students.get(1));
+        new Thread(() -> {
+            System.out.println(students.get(2));
+            System.out.println(students.get(3));
+
+        }).start();
+        new Thread(() -> {
+            System.out.println(students.get(4));
+            System.out.println(students.get(5));
+
+        }).start();
+
+    }
+    public void printSyncInConsole() {
+        List students = studentRepository
+                .findAll()
+                .stream()
+                .map(Student::getName)
+                .limit(6)
+                .toList();
+        printSync(students.get(0));
+        printSync(students.get(1));
+        new Thread(() -> {
+            printSync(students.get(2));
+            printSync(students.get(3));
+
+        }).start();
+        new Thread(() -> {
+            printSync(students.get(4));
+            printSync(students.get(5));
+
+        }).start();
+    }
+    private void printSync(Object o) {
+        synchronized (flag) {
+            System.out.println(o);
+        }
     }
 }
